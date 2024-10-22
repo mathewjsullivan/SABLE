@@ -14,7 +14,7 @@ function CheckBonIverOrg() {
     let substring = html.substring(pos, pos + 10);
     let end = substring.search(".jpg");
     let image = substring.substring(0,end+4);
-    if(getLastImageName() != image) { 
+    if(!isPreviousImageName(image)) { 
       addNewImage(image);
     }
   }
@@ -31,12 +31,30 @@ function getSableSheet() {
 
 function getLastImageName() { 
   let sableSheet = getSableSheet();
-  return sableSheet.getSheetByName("SABLE").getSheetValues(sableSheet.getLastRow(), 1, 1, 1)[0][0]
+  return sableSheet.getSheetByName("SABLE,").getSheetValues(sableSheet.getLastRow(), 1, 1, 1)[0][0]
+}
+
+function isPreviousImageName(imageName) { 
+  let previousImageNames = getAllPreviousImageNames();
+  for (i in previousImageNames) { 
+    if(previousImageNames[i] == imageName) { return true; }
+  }
+  return false;
+}
+
+function getAllPreviousImageNames() { 
+  let sableSheet = getSableSheet();
+  let imageValues = sableSheet.getSheetByName("SABLE,").getSheetValues(2,1,sableSheet.getLastRow(),1);
+  let imageNames = [];
+  for (i in imageValues) { 
+    imageNames.push(imageValues[i][0]);
+  }
+  return imageNames;
 }
 
 function addNewImage(imageName) {
   let sableSpreadSheet = getSableSheet();
-  let sableSheet = sableSpreadSheet.getSheetByName("SABLE")
+  let sableSheet = sableSpreadSheet.getSheetByName("SABLE,")
   let targetRow = sableSheet.getLastRow() + 1;
   let targetRange = sableSheet.getRange("A" + targetRow + ":B" + targetRow);
   targetRange.getCell(1,1).setValue(imageName);
